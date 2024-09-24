@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech-to-Text Form</title>
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .input-group input, .input-group textarea {
+            width: calc(100% - 50px); /* Adjust width to fit with icons */
+            padding: 10px 40px 10px 10px; /* Add padding to accommodate icons */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .input-group textarea {
+            resize: none;
+            height: 100px;
+        }
+        .input-group button {
+            position: absolute;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #555;
+            cursor: pointer;
+            padding: 0;
+        }
+        /* Position icons for text input */
+        .input-group .send-icon {
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+        }
+        .input-group .mic-icon {
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+        }
+        /* Position icons at the bottom of textarea */
+        .input-group .textarea-group .send-icon {
+            bottom: 10px;
+            right: 10px;
+        }
+        .input-group .textarea-group .mic-icon {
+            bottom: 10px;
+            right: 40px;
+        }
+        button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <form id="speechForm">
+            <div class="input-group">
+                <input type="text" id="textInput" placeholder="Enter text" required>
+                <!-- Clickable send icon inside the input -->
+                <button type="submit" class="send-icon"><i class="fas fa-paper-plane"></i></button>
+                <!-- Clickable microphone icon inside the input -->
+                <button type="button" class="mic-icon" id="startMic"><i class="fas fa-microphone"></i></button>
+            </div>
+
+            <div class="input-group textarea-group">
+                <textarea id="textMessage" placeholder="Enter message" required></textarea>
+                <!-- Clickable send icon inside the textarea at the bottom -->
+                <button type="submit" class="send-icon"><i class="fas fa-paper-plane"></i></button>
+                <!-- Clickable microphone icon inside the textarea at the bottom -->
+                <button type="button" class="mic-icon" id="startMicMessage"><i class="fas fa-microphone"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Check if the browser supports SpeechRecognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        // General settings for speech recognition
+        recognition.continuous = false; // Stop after a single recognition
+        recognition.interimResults = false; // Only final results
+        recognition.lang = 'en-US'; // Set language to English
+
+        // Handle microphone click for the text input field
+        document.getElementById('startMic').addEventListener('click', function() {
+            recognition.start(); // Start listening
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript; // Get the recognized text
+                document.getElementById('textInput').value = transcript; // Set the text to the input field
+            };
+        });
+
+        // Handle microphone click for the textarea
+        document.getElementById('startMicMessage').addEventListener('click', function() {
+            recognition.start(); // Start listening
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript; // Get the recognized text
+                document.getElementById('textMessage').value = transcript; // Set the text to the textarea
+            };
+        });
+
+        // Optional: Stop recognition when the form is submitted
+        document.getElementById('speechForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent actual form submission
+            recognition.stop(); // Stop listening
+            alert('Form submitted!');
+        });
+    </script>
+
+</body>
+</html>
